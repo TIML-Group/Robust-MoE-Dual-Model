@@ -325,19 +325,16 @@ def main():
                 outputs_adv = net(inputs_adv)
                 loss_model = criterion(outputs_adv, targets)
 
-                with torch.no_grad():
-                    router_outputs = net.router(inputs)
-                _, top2_indices = torch.topk(router_outputs, k=2, dim=1)
-                second_best_expert_indices = top2_indices[:, 1]
+                second_best_expert_indices = net.router.get_second_expert(inputs)
                 loss_expert = 0.0
                 for expert_id, expert in enumerate(net.experts):
                     selected_mask = (second_best_expert_indices == expert_id)
 
                     if selected_mask.sum() == 0:
                         continue
-
                     selected_inputs = inputs[selected_mask]
                     selected_targets = targets[selected_mask]
+                    selected_inputs, selected_targets = selected_inputs.detach(), selected_targets.detach()
 
                     expert_inputs_adv = pgd_train.attack(net=expert, inp=selected_inputs, label=selected_targets)
                     expert_inputs_adv = expert_inputs_adv.to(device)

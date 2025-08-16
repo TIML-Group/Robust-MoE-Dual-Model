@@ -16,6 +16,13 @@ class Router(nn.Module):
         gate_logits = self.gate(x_flat)
         top1_expert = torch.argmax(gate_logits, dim=1)
         return top1_expert
+    def get_second_expert(self, x):
+        batch_size = x.size(0)
+        x_flat = x.view(batch_size, -1)
+        gate_logits = self.gate(x_flat)
+        _, top2_indices = torch.topk(gate_logits, k=2, dim=1)
+        second_expert = top2_indices[:, 1]
+        return second_expert
 
 
 class ResnetExpert(nn.Module):
