@@ -288,25 +288,25 @@ def main():
         best_acc = checkpoint['acc']
         start_epoch = checkpoint['epoch']
 
-        # Loss is CE
-        criterion = nn.CrossEntropyLoss()
-        criterion_kl = nn.KLDivLoss(size_average=False)
+    # Loss is CE
+    criterion = nn.CrossEntropyLoss()
+    criterion_kl = nn.KLDivLoss(size_average=False)
 
-        if args.opt == "adam":
-            optimizer = optim.Adam(net.parameters(), lr=args.lr)
-        elif args.opt == "sgd":
-            optimizer = optim.SGD(net.parameters(), lr=args.lr)
+    if args.opt == "adam":
+        optimizer = optim.Adam(net.parameters(), lr=args.lr)
+    elif args.opt == "sgd":
+        optimizer = optim.SGD(net.parameters(), lr=args.lr)
 
-        # use cosine scheduling
-        scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.00005, step_size_up=500, max_lr=args.lr)
-        scaler = torch.amp.GradScaler('cuda', enabled=use_amp)
+    # use cosine scheduling
+    scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.00005, step_size_up=500, max_lr=args.lr)
+    scaler = torch.amp.GradScaler('cuda', enabled=use_amp)
 
-        # PGD Attacker
-        epsilon = 2 / 255
-        step_size = 2 / 255
-        num_step_train = 10
-        num_step_val = 50
-        beta = args.beta
+    # PGD Attacker
+    epsilon = 2 / 255
+    step_size = 2 / 255
+    num_step_train = 10
+    num_step_val = 50
+    beta = args.beta
 
     # FFCV [0,255]
     pgd_train = PGD(eps=epsilon, sigma=step_size, nb_iter=num_step_train, DEVICE=device,
