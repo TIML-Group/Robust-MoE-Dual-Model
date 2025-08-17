@@ -80,7 +80,7 @@ class MOE_ViT(nn.Module):
         top1_expert_indices = self.router(x)
 
         # Forward the input through the selected expert
-        outputs = torch.zeros(batch_size, 10).to(x.device)  # 10: dataset class
+        outputs = torch.zeros(batch_size, 200).to(x.device)  # 200: dataset class
         for i in range(batch_size):
             expert_output = self.experts[top1_expert_indices[i]](x[i].unsqueeze(0)) # It should be done in batch-size
             outputs[i] = expert_output
